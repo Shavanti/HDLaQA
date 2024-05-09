@@ -118,9 +118,9 @@ if __name__ == '__main__':
         'test_patch_num': args.test_patch_num,
     }
 
-    data_root = '/home/vip/hdd2/IQA'
-    save_log_root = '/home/vip/jl/HDA/logger'
-    save_model_root = '/home/vip/jl/HDA/models'
+    data_root = '/home/vip/hdd2/IQA'   # The saving root of your IQA data 
+    save_log_root = '/home/vip/jl/HDLaQA/logger'   # The saving root of the logger information
+    save_model_root = '/home/vip/jl/HDLaQA/models'   # The saving root of the pre-trained model
     if not os.path.exists(save_log_root):
         os.mkdir(save_log_root)
     if not os.path.exists(save_model_root):
@@ -130,7 +130,7 @@ if __name__ == '__main__':
         'live': os.path.join(data_root, 'databaserelease2'),
         'livec': os.path.join(data_root, 'ChallengeDB_release'),
 
-        'logger_saving_path': os.path.join(save_log_root, (args.dataset + 'HDA')),
+        'logger_saving_path': os.path.join(save_log_root, (args.dataset + 'HDLaQA')),
         'model_saving_path': save_model_root,
     }
 
