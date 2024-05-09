@@ -9,7 +9,7 @@ import numpy as np
 from scipy import stats
 from Functions.evaluation_metrics import regular_metrics
 from ddptestsampler import SequentialDistributedSampler
-from hda_model import HDA as predictor
+from HDLaQA_model import HDLaQA as predictor
 
 
 def distributed_concat(tensor, num_total_examples):
