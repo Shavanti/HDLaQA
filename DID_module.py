@@ -12,7 +12,7 @@ def INF(B,H,W):
 
 
 class DualheadCrissCrossAttention(nn.Module):
-    """ Dual-head Criss-Cross Attention Module"""
+    """ Dual-head Spatial Dependency Module of the proposed HDLaQA """
     def __init__(self, in_dim, out_dim):
         super(DualheadCrissCrossAttention, self).__init__()
         self.query_conv = nn.Conv2d(in_channels=in_dim, out_channels=in_dim//8, kernel_size=1)
