@@ -5,7 +5,7 @@ from torch.nn import init
 import math
 import numpy as np
 import torch.utils.model_zoo as model_zoo
-from DID_module import DualheadCrissCrossAttention
+from DSD_module import DualheadCrissCrossAttention
 
 model_urls = {
     'resnet18': 'https://download.pytorch.org/models/resnet18-5c106cde.pth',
@@ -34,7 +34,7 @@ def ebp(feature1, feature2, a):
     return feature
 
 
-class HDA(nn.Module):
+class HDLaQA(nn.Module):
 
     def __init__(self):
         super(IDF, self).__init__()
@@ -43,9 +43,9 @@ class HDA(nn.Module):
         self.l2pool = L2pooling(channels=128)
         self.l2pool_ = L2pooling(channels=16)
 
-        self.DID_1 = DualheadCrissCrossAttention(in_dim=256, out_dim=16)
-        self.DID_2 = DualheadCrissCrossAttention(in_dim=144, out_dim=16)
-        self.DID_3 = DualheadCrissCrossAttention(in_dim=144, out_dim=16)
+        self.DSD_1 = DualheadCrissCrossAttention(in_dim=256, out_dim=16)
+        self.DSD_2 = DualheadCrissCrossAttention(in_dim=144, out_dim=16)
+        self.DSD_3 = DualheadCrissCrossAttention(in_dim=144, out_dim=16)
 
         self.fc_1 = nn.Linear(16*16, 64)
         self.fc_1_1 = nn.Linear(64, 1)
@@ -63,9 +63,9 @@ class HDA(nn.Module):
         self.prelu = nn.PReLU()
 
         # initialize
-        self.DID_1.apply(weights_init_xavier)
-        self.DID_2.apply(weights_init_xavier)
-        self.DID_3.apply(weights_init_xavier)
+        self.DSD_1.apply(weights_init_xavier)
+        self.DSD_2.apply(weights_init_xavier)
+        self.DSD_3.apply(weights_init_xavier)
 
         weights_init_xavier(self.fc_1)
         weights_init_xavier(self.fc_2)
@@ -76,17 +76,17 @@ class HDA(nn.Module):
         res_out = self.res(img)
 
         features_1 = self.l2pool(res_out['features1'])
-        features_1_new, features_2 = self.DID_1(features_1, res_out['features2'])  # B, 256, h,w
+        features_1_new, features_2 = self.DSD_1(features_1, res_out['features2'])  # B, 256, h,w
         fusion_1 = ebp(features_1_new, features_2, self.a)
         F_1 = self.prelu(self.fc_1(fusion_1))
         q_1 = self.fc_1_1(F_1) * self.coef_1
 
-        features_2_new, features_3 = self.DID_2(self.l2pool_(features_2), res_out['features3'])  # B, 256, h,w
+        features_2_new, features_3 = self.DSD_2(self.l2pool_(features_2), res_out['features3'])  # B, 256, h,w
         fusion_2 = ebp(features_2_new, features_3, self.a)
         F_2 = self.prelu(self.fc_2(fusion_2))
         q_2 = self.fc_2_1(F_2) * self.coef_2
 
-        features_3_new, features_4 = self.DID_3(self.l2pool_(features_3), res_out['features4'])  # B, 256, h,w
+        features_3_new, features_4 = self.DSD_3(self.l2pool_(features_3), res_out['features4'])  # B, 256, h,w
         fusion_3 = ebp(features_3_new, features_4, self.a)
         F_3 = self.prelu(self.fc_3(fusion_3))
         q_3 = self.fc_3_1(F_3) * self.coef_3
